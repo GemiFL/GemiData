@@ -1,4 +1,5 @@
 import os
+import pickle
 import ujson
 import numpy as np
 import gc
@@ -149,7 +150,12 @@ def separate_data(data,
         idx_for_each_class = []
         for i in range(num_classes):
             # idx_for_each_class.append(idxs[dataset_label == i])
-            idx_for_each_class.append(idxs[dataset_label[:, 1] == i])
+            if len(data) == 3:
+                idx_for_each_class.append(idxs[dataset_label[:, 1] == i])
+            elif len(data) == 2:
+                idx_for_each_class.append(idxs[dataset_label == i])
+            else:
+                raise ValueError("It is not implemented!")
 
         class_num_per_client = [class_per_client for _ in range(num_clients)]
         for i in range(num_classes):
@@ -229,7 +235,13 @@ def separate_data(data,
 
         for i in np.unique(y[client]):
             # statistic[client].append((int(i), int(sum(y[client] == i))))
-            statistic[client].append((int(i), int(sum(y[client][:, 1] == i))))
+            if len(data) == 3:
+                statistic[client].append((int(i), int(sum(y[client][:,
+                                                                    1] == i))))
+            elif len(data) == 2:
+                statistic[client].append((int(i), int(sum(y[client] == i))))
+            else:
+                raise ValueError("It is not implemented!")
 
     # del data
     # gc.collect()
@@ -362,11 +374,13 @@ def save_file(config_path,
 
     for idx, train_dict in enumerate(train_data):
 
-        with open(train_path + str(idx) + '.npz', 'wb') as f:
-            np.savez_compressed(f, data=train_dict)
+        with open(train_path + str(idx) + '.pkl', 'wb') as f:
+            pickle.dump(train_dict, f)
+            # np.savez_compressed(f, data=train_dict)
     for idx, test_dict in enumerate(test_data):
-        with open(test_path + str(idx) + '.npz', 'wb') as f:
-            np.savez_compressed(f, data=test_dict)
+        with open(test_path + str(idx) + '.pkl', 'wb') as f:
+            # np.savez_compressed(f, data=test_dict)
+            pickle.dump(test_dict, f)
     with open(config_path, 'w') as f:
         ujson.dump(config, f)
 

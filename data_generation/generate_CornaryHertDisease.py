@@ -5,7 +5,6 @@ import pickle
 import logging
 import numpy as np
 import pandas as pd
-from gemifl.utils.data_utils import *
 
 random.seed(1)
 np.random.seed(1)
@@ -15,6 +14,8 @@ num_classes = 2
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
+
+from data_generate import *
 
 data_dir = os.path.join(parent_dir, "datasets/cornary_heart_disease/")
 data_path = os.path.join(data_dir, "heart_disease.csv")
